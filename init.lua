@@ -3,7 +3,7 @@
 
 local S
 if minetest.get_modpath("intllib") then
-	S = intllib.Getter()
+	S = intllib.make_gettext_pair()
 else
 	S = function(s) return s end
 end
