@@ -10,11 +10,6 @@ else
 	S = function(s) return s end
 end
 
-local marquee_cbox = {
-	type = "fixed",
-	fixed = { -16/32, -8/16, -16/32, 16/32, 8/16, -15/32 }
-}
-
 -- the following functions based on the so-named ones in Jeija's digilines mod
 
 local reset_meta = function(pos)
@@ -34,10 +29,19 @@ end
 -- the nodes:
 
 local fdir_to_right = {
-	{  1,  0 },
 	{  0, -1 },
-	{ -1,  0 },
+	{  0, -1 },
 	{  0,  1 },
+	{  0, -1 },
+	{  1,  0 },
+	{ -1,  0 },
+}
+
+local cbox = {
+	type = "wallmounted",
+	wall_top = { -8/16, 7/16, -8/16, 8/16, 8/16, 8/16 },
+	wall_bottom = { -8/16, -8/16, -8/16, 8/16, -7/16, 8/16 },
+	wall_side = { -8/16, -8/16, -8/16, -7/16, 8/16, 8/16 }
 }
 
 local padding = " "
@@ -66,7 +70,6 @@ local display_string = function(pos, channel, string)
 		local node = minetest.get_node(pos2)
 		local meta = minetest.get_meta(pos2)
 		local setchan = meta:get_string("channel")
-
 		if not string.match(node.name, "led_marquee:char_") or (setchan ~= nil and setchan ~= "" and setchan ~= channel) then break end
 		local asc = string.byte(padded_string, i, i)
 		if (node.param2 % 8) == fdir and asc > 31 and asc < 130 then
@@ -167,8 +170,8 @@ for i = 32, 129 do
 		paramtype = "light",
 		paramtype2 = "colorwallmounted",
 		light_source = light,
-		selection_box = marquee_cbox,
-		collision_box = marquee_cbox,
+		selection_box = cbox,
+		node_box = cbox,
 		on_construct = function(pos)
 			reset_meta(pos)
 		end,
