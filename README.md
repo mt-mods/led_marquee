@@ -46,7 +46,7 @@ Red (0), orange, yellow, lime, green, aqua, cyan, sky blue, blue, violet, magent
 
 Colors 12 to 23 are the same as 0 to 11, but lower brightness.
 
-Colors 23 - 30 are white, light grey, medium grey, dim grey, light blue, brown, and pink.
+Colors 24 - 30 are white, light grey, medium grey, dim grey, light blue, brown, and pink.
 
 The left-most/"master" panel will remember the last color used, and defaults to red.
 
