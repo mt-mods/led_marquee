@@ -56,45 +56,64 @@ local display_string = function(pos, channel, string)
 	local padded_string = string.sub(string..padding, 1, 64)
 	local fdir = minetest.get_node(pos).param2 % 4
 	local pos2 = pos
+	local mastermeta = minetest.get_meta(pos)
+	local lastcolor = mastermeta:get_int("lastcolor")
+	if not lastcolor or lastcolor < 0 or lastcolor > 7 then
+		lastcolor = 0
+		mastermeta:set_int("lastcolor", 0)
+	end
 	for i = 1, 64 do
 		local node = minetest.get_node(pos2)
 		local meta = minetest.get_meta(pos2)
 		local setchan = meta:get_string("channel")
+
 		if not string.match(node.name, "led_marquee:char_") or (setchan ~= nil and setchan ~= "" and setchan ~= channel) then break end
 		local asc = string.byte(padded_string, i, i)
 		if (node.param2 % 4) == fdir and asc > 31 and asc < 130 then
-			minetest.swap_node(pos2, { name = "led_marquee:char_"..asc, param2 = node.param2})
+			minetest.swap_node(pos2, { name = "led_marquee:char_"..asc, param2 = (node.param2 % 4) + (lastcolor*32)})
+			pos2.x = pos2.x + fdir_to_right[fdir+1][1]
+			pos2.z = pos2.z + fdir_to_right[fdir+1][2]
+		elseif asc < 8 then
+			lastcolor = asc
+			mastermeta:set_int("lastcolor", asc)
 		end
-		pos2.x = pos2.x + fdir_to_right[fdir+1][1]
-		pos2.z = pos2.z + fdir_to_right[fdir+1][2]
 	end
 end
 
 local on_digiline_receive_string = function(pos, node, channel, msg)
 	local meta = minetest.get_meta(pos)
 	local setchan = meta:get_string("channel")
+	local lastcolor = meta:get_int("lastcolor")
+	if not lastcolor or lastcolor < 0 or lastcolor > 7 then
+		lastcolor = 0
+		meta:set_int("lastcolor", 0)
+	end
+
 	if setchan ~= channel then return end
 	if msg and msg ~= "" and type(msg) == "string" then
 		if string.len(msg) > 1 then
 			if msg == "off" then
-				minetest.swap_node(pos, { name = "led_marquee:char_32", param2 = node.param2})
+				minetest.swap_node(pos, { name = "led_marquee:char_32", param2 = (node.param2 % 4) + (lastcolor*32)})
 			elseif msg == "colon" then
-				minetest.swap_node(pos, { name = "led_marquee:char_58", param2 = node.param2})
+				minetest.swap_node(pos, { name = "led_marquee:char_58", param2 = (node.param2 % 4) + (lastcolor*32)})
 			elseif msg == "period" then
-				minetest.swap_node(pos, { name = "led_marquee:char_46", param2 = node.param2})
+				minetest.swap_node(pos, { name = "led_marquee:char_46", param2 = (node.param2 % 4) + (lastcolor*32)})
 			elseif msg == "del" then
-				minetest.swap_node(pos, { name = "led_marquee:char_127", param2 = node.param2})
+				minetest.swap_node(pos, { name = "led_marquee:char_127", param2 = (node.param2 % 4) + (lastcolor*32)})
 			elseif msg == "allon" then
-				minetest.swap_node(pos, { name = "led_marquee:char_128", param2 = node.param2})
+				minetest.swap_node(pos, { name = "led_marquee:char_128", param2 = (node.param2 % 4) + (lastcolor*32)})
 			elseif msg == "cursor" then
-				minetest.swap_node(pos, { name = "led_marquee:char_129", param2 = node.param2})
+				minetest.swap_node(pos, { name = "led_marquee:char_129", param2 = (node.param2 % 4) + (lastcolor*32)})
 			else
 				display_string(pos, channel, msg)
 			end
 		else
 			local asc = string.byte(msg)
 			if asc > 31 and asc < 130 then
-				minetest.swap_node(pos, { name = "led_marquee:char_"..asc, param2 = node.param2})
+				minetest.swap_node(pos, { name = "led_marquee:char_"..asc, param2 = (node.param2 % 4) + (lastcolor*32)})
+			elseif asc < 8 then
+				lastcolor = asc
+				meta:set_int("lastcolor", asc)
 			elseif msg == "get" then -- get value as ASCII numerical value
 				digiline:receptor_send(pos, digiline.rules.default, channel, tonumber(string.match(minetest.get_node(pos).name,"led_marquee:char_(.+)"))) -- wonderfully horrible string manipulaiton
 			elseif msg == "getstr" then -- get actual char
@@ -103,9 +122,9 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 		end
 	elseif msg and type(msg) == "number" then
 		if msg == 0 then
-			minetest.swap_node(pos, { name = "led_marquee:char_32", param2 = node.param2})
+			minetest.swap_node(pos, { name = "led_marquee:char_32", param2 = (node.param2 % 4) + (lastcolor*32)})
 		elseif msg > 31 and alnum_chars[msg - 31] ~= nil then
-			minetest.swap_node(pos, { name = "led_marquee:char_"..tostring(msg), param2 = node.param2})
+			minetest.swap_node(pos, { name = "led_marquee:char_"..tostring(msg), param2 = (node.param2 % 4) + (lastcolor*32)})
 		end
 	end
 end
@@ -126,10 +145,11 @@ for i = 32, 129 do
 		drawtype = "mesh",
 		mesh = "led_marquee.obj",
 		tiles = {
-			"led_marquee_base.png",
-			"led_marquee_leds_off.png",
-			{ name="led_marquee_char_"..i..".png", color="0xffff0000"},
+			{ name="led_marquee_base.png", color="white"},
+			{ name="led_marquee_leds_off.png", color="white"},
+			"led_marquee_char_"..i..".png",
 		},
+		palette="palette.png",
 		use_texture_alpha = true,
 		groups = groups,
 		paramtype = "light",
