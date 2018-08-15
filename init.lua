@@ -133,6 +133,11 @@ for i = 32, 129 do
 	local groups = { cracky = 2, not_in_creative_inventory = 1}
 	local light = LIGHT_MAX-2
 	local description = S("Alphanumeric LED marquee panel ("..i..")")
+	local tiles = {
+				{ name="led_marquee_base.png", color="white"},
+				{ name="led_marquee_leds_off.png", color="white"},
+				"led_marquee_char_"..i..".png",
+			}
 
 	if i == 32 then
 		groups = {cracky = 2}
@@ -140,15 +145,22 @@ for i = 32, 129 do
 		description = S("Alphanumeric LED marquee panel")
 	end
 
+	if i == 129 then
+		tiles = {
+			{ name="led_marquee_base.png", color="white"},
+			{ name="led_marquee_leds_off.png", color="white"},
+				{
+				name = "led_marquee_char_129.png",
+				animation = {type = "vertical_frames", aspect_w = 32, aspect_h = 32, length = 0.75}
+				}
+		}
+	end
+
 	minetest.register_node("led_marquee:char_"..i, {
 		description = description,
 		drawtype = "mesh",
 		mesh = "led_marquee.obj",
-		tiles = {
-			{ name="led_marquee_base.png", color="white"},
-			{ name="led_marquee_leds_off.png", color="white"},
-			"led_marquee_char_"..i..".png",
-		},
+		tiles = tiles,
 		palette="palette.png",
 		use_texture_alpha = true,
 		groups = groups,
