@@ -62,7 +62,7 @@ local display_string = function(pos, channel, string)
 	local pos2 = pos
 	local mastermeta = minetest.get_meta(pos)
 	local lastcolor = mastermeta:get_int("lastcolor")
-	if not lastcolor or lastcolor < 0 or lastcolor > 7 then
+	if not lastcolor or lastcolor < 0 or lastcolor > 30 then
 		lastcolor = 0
 		mastermeta:set_int("lastcolor", 0)
 	end
@@ -87,7 +87,7 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 	local meta = minetest.get_meta(pos)
 	local setchan = meta:get_string("channel")
 	local lastcolor = meta:get_int("lastcolor")
-	if not lastcolor or lastcolor < 0 or lastcolor > 7 then
+	if not lastcolor or lastcolor < 0 or lastcolor > 30 then
 		lastcolor = 0
 		meta:set_int("lastcolor", 0)
 	end
