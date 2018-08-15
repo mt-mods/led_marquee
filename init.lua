@@ -1,8 +1,6 @@
 -- simple LED marquee mod
 -- by Vanessa Dannenberg
 
-led_marquee = {}
-
 local S
 if minetest.get_modpath("intllib") then
 	S = intllib.Getter()
