@@ -48,7 +48,7 @@ local padding = " "
 local allon = string.char(128)
 for i = 1, 64 do
 	padding = padding.." "
-	allon = allon..string.char(128)
+	allon = allon..string.char(144)
 end
 
 local display_string = function(pos, channel, string)
@@ -72,7 +72,7 @@ local display_string = function(pos, channel, string)
 		local setchan = meta:get_string("channel")
 		if not string.match(node.name, "led_marquee:char_") or (setchan ~= nil and setchan ~= "" and setchan ~= channel) then break end
 		local asc = string.byte(padded_string, i, i)
-		if (node.param2 % 8) == fdir and asc > 31 and asc < 130 then
+		if (node.param2 % 8) == fdir and asc > 30 and asc < 256 then
 			minetest.swap_node(pos2, { name = "led_marquee:char_"..asc, param2 = (node.param2 % 8) + (lastcolor*8)})
 			pos2.x = pos2.x + fdir_to_right[fdir+1][1]
 			pos2.z = pos2.z + fdir_to_right[fdir+1][2]
@@ -104,15 +104,15 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 			elseif msg == "del" then
 				minetest.swap_node(pos, { name = "led_marquee:char_127", param2 = (node.param2 % 8) + (lastcolor*8)})
 			elseif msg == "allon" then
-				minetest.swap_node(pos, { name = "led_marquee:char_128", param2 = (node.param2 % 8) + (lastcolor*8)})
+				minetest.swap_node(pos, { name = "led_marquee:char_144", param2 = (node.param2 % 8) + (lastcolor*8)})
 			elseif msg == "cursor" then
-				minetest.swap_node(pos, { name = "led_marquee:char_129", param2 = (node.param2 % 8) + (lastcolor*8)})
+				minetest.swap_node(pos, { name = "led_marquee:char_31", param2 = (node.param2 % 8) + (lastcolor*8)})
 			else
 				display_string(pos, channel, msg)
 			end
 		else
 			local asc = string.byte(msg)
-			if asc > 31 and asc < 130 then
+			if asc > 30 and asc < 256 then
 				minetest.swap_node(pos, { name = "led_marquee:char_"..asc, param2 = (node.param2 % 8) + (lastcolor*8)})
 			elseif asc < 31 then
 				lastcolor = asc
@@ -126,13 +126,13 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 	elseif msg and type(msg) == "number" then
 		if msg == 0 then
 			minetest.swap_node(pos, { name = "led_marquee:char_32", param2 = (node.param2 % 8) + (lastcolor*8)})
-		elseif msg > 31 and alnum_chars[msg - 31] ~= nil then
+		elseif msg > 30 then
 			minetest.swap_node(pos, { name = "led_marquee:char_"..tostring(msg), param2 = (node.param2 % 8) + (lastcolor*8)})
 		end
 	end
 end
 
-for i = 32, 129 do
+for i = 31, 255 do
 	local groups = { cracky = 2, not_in_creative_inventory = 1}
 	local light = LIGHT_MAX-2
 	local description = S("Alphanumeric LED marquee panel ("..i..")")
@@ -142,21 +142,21 @@ for i = 32, 129 do
 				"led_marquee_char_"..i..".png",
 			}
 
-	if i == 32 then
-		groups = {cracky = 2}
-		light = nil
-		description = S("Alphanumeric LED marquee panel")
-	end
-
-	if i == 129 then
+	if i == 31 then
 		tiles = {
 			{ name="led_marquee_base.png", color="white"},
 			{ name="led_marquee_leds_off.png", color="white"},
 				{
-				name = "led_marquee_char_129.png",
+				name = "led_marquee_char_31.png",
 				animation = {type = "vertical_frames", aspect_w = 32, aspect_h = 32, length = 0.75}
 				}
 		}
+	end
+
+	if i == 32 then
+		groups = {cracky = 2}
+		light = nil
+		description = S("Alphanumeric LED marquee panel")
 	end
 
 	minetest.register_node("led_marquee:char_"..i, {
