@@ -179,11 +179,11 @@ end
 
 
 minetest.register_craft({
-	output = "led_marquee:char_32 4",
+	output = "led_marquee:char_32 6",
 	recipe = {
-		{ "", "default:glass", "" },
-		{ "default:glass", "default:sign_wall", "default:glass" },
-		{ "default:glass", "default:mese_crystal", "default:glass" }
+		{ "default:glass", "default:glass", "default:glass" },
+		{ "mesecons_lamp:lamp_off", "mesecons_lamp:lamp_off", "mesecons_lamp:lamp_off" },
+		{ "group:wood", "mesecons_microcontroller:microcontroller0000", "group:wood" }
 	},
 })
 
