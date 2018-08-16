@@ -42,43 +42,60 @@ local cbox = {
 	wall_side = { -8/16, -8/16, -8/16, -7/16, 8/16, 8/16 }
 }
 
-local padding = " "
-local allon = string.char(128)
-for i = 1, 64 do
-	padding = padding.." "
-	allon = allon..string.char(144)
-end
-
 local display_string = function(pos, channel, string)
 	if string == "off_multi" then
-		string = ""
+		string = string.rep(" ", 1024)
 	elseif string == "allon_multi" then
-		string = allon
+		string = string.rep(string.char(144), 1024)
 	end
-	local padded_string = string.sub(string..padding, 1, 64)
+	string = string.sub(string, 1, 1024)
 	local master_fdir = minetest.get_node(pos).param2 % 8
 	local master_meta = minetest.get_meta(pos)
 	local last_color = master_meta:get_int("last_color")
-	local pos2 = pos
-
+	local pos2 = table.copy(pos)
 	if not last_color or last_color < 0 or last_color > 27 then
 		last_color = 0
 		master_meta:set_int("last_color", 0)
 	end
-	for i = 1, 64 do
+	local i = 1
+	local len = string.len(string)
+	local wrapped = nil
+	while i <= len do
 		local node = minetest.get_node(pos2)
 		local fdir = node.param2 % 8
 		local meta = minetest.get_meta(pos2)
-		local setchan = meta:get_string("channel")
-		if not string.match(node.name, "led_marquee:char_") or (setchan ~= nil and setchan ~= "" and setchan ~= channel) then break end
-		local asc = string.byte(padded_string, i, i)
-		if master_fdir == fdir and asc > 30 and asc < 256 then
+		local setchan = nil
+		if meta then setchan = meta:get_string("channel") end
+		local asc = string.byte(string, i, i)
+		if not string.match(node.name, "led_marquee:char_") then
+			if not wrapped then
+				pos2.x = pos.x
+				pos2.y = pos2.y-1
+				pos2.z = pos.z
+				wrapped = true
+			else
+				break
+			end
+		elseif string.match(node.name, "led_marquee:char_")
+			and fdir ~= master_fdir or (setchan ~= nil and setchan ~= "" and setchan ~= channel) then
+			break
+		elseif asc == 28 then
+			pos2.x = pos.x
+			pos2.y = pos2.y-1
+			pos2.z = pos.z
+			i = i + 1
+			wrapped = nil
+		elseif asc > 30 and asc < 256 then
 			minetest.swap_node(pos2, { name = "led_marquee:char_"..asc, param2 = master_fdir + (last_color*8)})
 			pos2.x = pos2.x + fdir_to_right[fdir+1][1]
 			pos2.z = pos2.z + fdir_to_right[fdir+1][2]
+			i = i + 1
+			wrapped = nil
 		elseif asc < 28 then
 			last_color = asc
 			master_meta:set_int("last_color", asc)
+			i = i + 1
+			wrapped = nil
 		end
 	end
 end
