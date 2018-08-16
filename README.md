@@ -37,6 +37,8 @@ This mod uses the full ISO-8859-1 character set (see https://en.wikipedia.org/wi
 * 153-156: explosion/splat
 * 157-159: smileys
 
+If a string is prefixed with character code 255, it is treated as UTF-8 and passed through a simple translation function.  Only characters with codes greater than 159 are altered; normal ASCII text, color codes, control codes, and the above symbols are passed through unchanged.  Note that in this mode, a character code over 159 is treated as the first byte of a two-byte symbol.
+
 The panels also respond to these control messages:
 the keywords "off", "colon" and "period" translate to a blank space, ":", and ".", respectively (they're leftover from the nixie tubes fork, but might be useful anyway)
 
