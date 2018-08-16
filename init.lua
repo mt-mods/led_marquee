@@ -85,6 +85,14 @@ local display_string = function(pos, channel, string)
 			pos2.z = pos.z
 			i = i + 1
 			wrapped = nil
+		elseif asc == 29 then
+			local c = string.byte(string, i+1, i+1) or 0
+			local r = string.byte(string, i+2, i+2) or 0
+			pos2.x = pos.x + (fdir_to_right[fdir+1][1])*c
+			pos2.y = pos.y - r
+			pos2.z = pos.z + (fdir_to_right[fdir+1][2])*c
+			i = i + 3
+			wrapped = nil
 		elseif asc > 30 and asc < 256 then
 			minetest.swap_node(pos2, { name = "led_marquee:char_"..asc, param2 = master_fdir + (last_color*8)})
 			pos2.x = pos2.x + fdir_to_right[fdir+1][1]

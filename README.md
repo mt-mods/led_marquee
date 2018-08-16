@@ -16,9 +16,19 @@ The string will spread down the line until either a panel is found that faces th
 
 Panels to the left of the connected one are ignored (unless they, too, have their own connections).
 
-You can put multiple lines of panels end to end to form independent displays, so long as the panels that start each of the lines have unique channel names set.
+You can also stack up a wall of LED panels, of any horizontal and vertical amount.  If you then set a channel on the upper left panel, leave the others un-set, and connect a LuaController to it via digilines, the whole wall of panels will be treated as a multi-line display.
+    
+Long strings sent to that channel will be displayed starting at the upper-left and working from left to right, top to bottom, wrapping from line to line as appropriate (similar to printing to a shell terminal).
 
-The string is padded with spaces and then trimmed to 64 characters.
+As with a single line, printing continues from node to node until the program either finds a panel with a different non-empty channel than the first one, or if it finds a panel that's facing the wrong way.
+
+If the program finds something other than a panel, it wraps to the next line.  If it finds something other than a panel twice in a row, that signals that text has wrapped off of the last row, and printing is cut off.
+
+Lines of panels don't need to be all the same length, the program will wrap as needed, with the left margin always being aligned with the panel the LuaController is connected to.
+    
+Strings are trimmed to 1 kB.
+
+Panels are not erased between prints.
 
 Any unrecognized symbol or character, whether part of a string or singularly is ignored, except as noted below.
 
@@ -49,6 +59,10 @@ Colors 12 to 23 are the same as 0 to 11, but lower brightness.
 Colors 24 - 27 are white, light grey, medium grey, and dim grey.
 
 The left-most/"master" panel will remember the last color used, and defaults to red.
+
+A byte value of 28 will act as a line feed (I would have used 10, but that's a color code :-P )
+
+A byte value of 29 signals a cursor position command.  The next two byte values select a column and row, respectively.  The next character after the row byte will be printed there, and the rest of the string then continues printing from that spot onwards.
 
 You can use "get" and "getstr" to read the one character from the connected panel.  These messages will not read the other panels in the lineup.
 
