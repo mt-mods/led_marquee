@@ -29,7 +29,7 @@ end
 -- first char is non-break space, 0xA0
 local iso_chars=" ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ"
 
-get_iso = function(c)
+local get_iso = function(c)
 	local hb = string.byte(c,1) or 0
 	local lb = string.byte(c,2) or 0
 	local dec = lb+hb*256
@@ -38,7 +38,7 @@ get_iso = function(c)
 	return char
 end
 
-make_iso = function(s)
+local make_iso = function(s)
 	local i = 1
 	local s2 = ""
 	while i <= string.len(s) do
