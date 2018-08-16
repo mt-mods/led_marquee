@@ -24,6 +24,35 @@ local on_digiline_receive_std = function(pos, node, channel, msg)
 	end
 end
 
+-- convert Lua's idea of a UTF-8 char to ISO-8859-1
+
+-- first char is non-break space, 0xA0
+iso_chars=" ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ"
+
+get_iso = function(c)
+	local hb = string.byte(c,1) or 0
+	local lb = string.byte(c,2) or 0
+	local dec = lb+hb*256
+	local char = dec - 49664
+	if dec > 49855 then char = dec - 49856 end
+	return char
+end
+
+make_iso = function(s)
+	local i = 1
+	local s2 = ""
+	while i <= string.len(s) do
+		if string.byte(s,i) > 159 then
+			s2 = s2..string.char(get_iso(string.sub(s, i, i+1)))
+			i = i + 2
+		else
+			s2 = s2..string.sub(s, i, i)
+			i = i + 1
+		end
+	end
+	return s2
+end
+
 -- the nodes:
 
 local fdir_to_right = {
@@ -43,12 +72,15 @@ local cbox = {
 }
 
 local display_string = function(pos, channel, string)
+	string = string.sub(string, 1, 1024)
 	if string == "off_multi" then
 		string = string.rep(" ", 1024)
 	elseif string == "allon_multi" then
 		string = string.rep(string.char(144), 1024)
+	elseif string.sub(string,1,1) == string.char(255) then -- treat it as incoming UTF-8
+		string = make_iso(string.sub(string, 2, 1024))
 	end
-	string = string.sub(string, 1, 1024)
+
 	local master_fdir = minetest.get_node(pos).param2 % 8
 	local master_meta = minetest.get_meta(pos)
 	local last_color = master_meta:get_int("last_color")
