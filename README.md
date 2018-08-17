@@ -43,10 +43,10 @@ The panels also respond to these control messages:
 
 * "off_multi" or "clear" turns all panels in a lineup or wall off - essentially a "clear screen" command.
 * "allon_multi" turns on all LEDs of all panels in a lineup/wall (by filling them with char #144, i.e. the reverse of "clear").
-* "start_scroll" starts the last-displayed message scrolling to the left, automatically moving, and automatically re-starting.  The scroll action will spread across and down a multi-line wall (just set a new, different channel on the first row you want to exclude).
-* "stop_scroll" actually does nothing, since all printable messages automatically stop the timer, but it's a human-readable way to indicate it.
+* "start_scroll" starts the automatic scrolling function, repeatedly moving the last displayed message to the left one character space each time the scroll timer runs out (and automatically restarting it, natch).  The scroll action will spread across the line, and down a multi-line wall (just set a new, different channel on the first row you want to exclude), and will continue until "stop_scroll"  or any displayable message is received.
+* "stop_scroll" does just what it says - it stops the auto-scroll timer.
 * "scroll_speed" followed by a decimal number (in the string, not a byte value) sets the time between scroll steps.  Minimum 0.5s, maximum 5s.
-* "scroll_step" will immediately advance the last-displayed message by one character.  Omit the "start_scroll" and "scroll_speed" keywords, and use this instead if you want to let your LuaController control the scrolling speed.
+* "scroll_step" will immediately advance the last-displayed message by one character.  Omit the above automatic scrolling keywords, and use ONLY this keyword instead if you want to let your LuaController control the scrolling speed.
 
 If you need vertical scrolling, you will have to handle that yourself (since the size of a screen/wall is not hard-coded).
 

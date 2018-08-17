@@ -77,6 +77,7 @@ led_marquee.scroll_text = function(pos, elapsed)
 	led_marquee.display_msg(pos, channel, msg.."  ")
 	if string.byte(string.sub(msg,1,1)) < 32 then index = index + 1 end
 	meta:set_int("index", index + 1)
+	if not elapsed or elapsed < 0.5 then return false end
 	return true
 end
 
