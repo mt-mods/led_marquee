@@ -196,13 +196,13 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 	if setchan ~= channel then return end
 	if msg and msg ~= "" and type(msg) == "string" then
 		if string.len(msg) > 1 then
-			if msg == "off_multi" or msg == "clear" then
+			if msg == "clear" then
 				led_marquee.set_timer(pos, 0)
 				msg = string.rep(" ", 1024)
 				meta:set_string("last_msg", msg)
 				led_marquee.display_msg(pos, channel, msg)
 				meta:set_int("index", 1)
-			elseif msg == "allon_multi" then
+			elseif msg == "allon" then
 				led_marquee.set_timer(pos, 0)
 				msg = string.rep(string.char(144), 1024)
 				meta:set_string("last_msg", msg)
