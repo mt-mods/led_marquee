@@ -4,9 +4,11 @@ Simply place one or more panels, and set a channel on just the left-most or uppe
 
 Then send a character, a string, or one of several control words or codes to that channel from a Mesecons Lua Controller and the mod will try to display it.
 
-A single character will be displayed on the connected panel. A numeric message (i.e. not a string) will display the first digit on the connected panel.
+A single character will be displayed on the connected panel.
 
-Strings will be displayed using all panels in a lineup, so long as they all face the same way, starting from the panel the Lua Controller is connected to, going left to right. The other panels in the line do not need to be connected to anything - think of them as being connected together internally. Only the panel at the far left need be connected to the Lua Controller.
+A numeric message (i.e. not a string) will be converted into a string.
+
+Strings of all types (other than the keywords below) will be displayed using all panels in a lineup, so long as they all face the same way, starting from the panel the Lua Controller is connected to, going left to right. The other panels in the line do not need to be connected to anything - think of them as being connected together internally. Only the panel at the far left need be connected to the Lua Controller.
 
 The string will spread down the line until either a panel is found that faces the wrong way, or has a channel that's not empty/nil and is set to something other than what the first is set to, or if a node is encountered that is not an alpha-numeric panel at all.
 

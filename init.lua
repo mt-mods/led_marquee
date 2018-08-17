@@ -220,11 +220,7 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 			end
 		end
 	elseif msg and type(msg) == "number" then
-		if msg == 0 then
-			minetest.swap_node(pos, { name = "led_marquee:char_32", param2 = fdir + (last_color*8)})
-		elseif msg > 30 then
-			minetest.swap_node(pos, { name = "led_marquee:char_"..tostring(msg), param2 = fdir + (last_color*8)})
-		end
+		led_marquee.display_msg(pos, channel, tostring(msg))
 	end
 end
 
