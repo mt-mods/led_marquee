@@ -177,7 +177,7 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 	if msg and msg ~= "" and type(msg) == "string" then
 		led_marquee.set_timer(pos, 0)
 		if string.len(msg) > 1 then
-			elseif msg == "off_multi" or msg == "clear" then
+			if msg == "off_multi" or msg == "clear" then
 				msg = string.rep(" ", 1024)
 				meta:set_string("last_msg", msg)
 				led_marquee.display_msg(pos, channel, msg)
