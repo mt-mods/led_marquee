@@ -175,13 +175,14 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 
 	if setchan ~= channel then return end
 	if msg and msg ~= "" and type(msg) == "string" then
-		led_marquee.set_timer(pos, 0)
 		if string.len(msg) > 1 then
 			if msg == "off_multi" or msg == "clear" then
+				led_marquee.set_timer(pos, 0)
 				msg = string.rep(" ", 1024)
 				meta:set_string("last_msg", msg)
 				led_marquee.display_msg(pos, channel, msg)
 			elseif msg == "allon_multi" then
+				led_marquee.set_timer(pos, 0)
 				msg = string.rep(string.char(144), 1024)
 				meta:set_string("last_msg", msg)
 				led_marquee.display_msg(pos, channel, msg)
@@ -190,13 +191,17 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 				if not timeout or timeout < 0.5 or timeout > 5 then timeout = 0 end
 				led_marquee.set_timer(pos, timeout)
 			elseif msg == "stop_scroll" then
-				return -- (the timer is already stopped by receipt of a message)
+				led_marquee.set_timer(pos, 0)
+				return
 			elseif string.sub(msg, 1, 12) == "scroll_speed" then
 				local timeout = tonumber(string.sub(msg, 13))
 				if not timeout or timeout < 0.5 or timeout > 5 then timeout = 0 end
 				meta:set_int("timeout", timeout)
 				led_marquee.set_timer(pos, timeout)
+			elseif msg == "scroll_step" then
+				led_marquee.scroll_text(pos)
 			else
+				led_marquee.set_timer(pos, 0)
 				meta:set_string("last_msg", msg)
 				led_marquee.display_msg(pos, channel, msg)
 			end

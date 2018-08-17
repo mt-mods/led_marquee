@@ -46,6 +46,7 @@ The panels also respond to these control messages:
 * "start_scroll" starts the last-displayed message scrolling to the left, automatically moving, and automatically re-starting.  The scroll action will spread across and down a multi-line wall (just set a new, different channel on the first row you want to exclude).
 * "stop_scroll" actually does nothing, since all printable messages automatically stop the timer, but it's a human-readable way to indicate it.
 * "scroll_speed" followed by a decimal number (in the string, not a byte value) sets the time between scroll steps.  Minimum 0.5s, maximum 5s.
+* "scroll_step" will immediately advance the last-displayed message by one character.  Omit the "start_scroll" and "scroll_speed" keywords, and use this instead if you want to let your LuaController control the scrolling speed.
 
 If you need vertical scrolling, you will have to handle that yourself (since the size of a screen/wall is not hard-coded).
 
