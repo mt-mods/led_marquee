@@ -182,11 +182,13 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 				msg = string.rep(" ", 1024)
 				meta:set_string("last_msg", msg)
 				led_marquee.display_msg(pos, channel, msg)
+				meta:set_int("index", 1)
 			elseif msg == "allon_multi" then
 				led_marquee.set_timer(pos, 0)
 				msg = string.rep(string.char(144), 1024)
 				meta:set_string("last_msg", msg)
 				led_marquee.display_msg(pos, channel, msg)
+				meta:set_int("index", 1)
 			elseif msg == "start_scroll" then
 				local timeout = meta:get_int("timeout")
 				if not timeout or timeout < 0.5 or timeout > 5 then timeout = 0 end
@@ -211,12 +213,15 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 				led_marquee.set_timer(pos, 0)
 				meta:set_string("last_msg", msg)
 				led_marquee.display_msg(pos, channel, msg)
+				meta:set_int("index", 1)
+
 			end
 		else
 			local asc = string.byte(msg)
 			if asc > 30 and asc < 256 then
 				minetest.swap_node(pos, { name = "led_marquee:char_"..asc, param2 = fdir + (last_color*8)})
 				meta:set_string("last_msg", tostring(msg))
+				meta:set_int("index", 1)
 			elseif asc < 28 then
 				last_color = asc
 				meta:set_int("last_color", asc)
@@ -225,6 +230,7 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 	elseif msg and type(msg) == "number" then
 		meta:set_string("last_msg", tostring(msg))
 		led_marquee.display_msg(pos, channel, tostring(msg))
+		meta:set_int("index", 1)
 	end
 end
 
