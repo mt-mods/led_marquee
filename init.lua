@@ -59,10 +59,10 @@ end
 
 led_marquee.set_timer = function(pos, timeout)
 	local timer = minetest.get_node_timer(pos)
-	local meta = minetest.get_meta(pos)
-	meta:set_int("index", 1)
 	timer:stop()
 	if timeout > 0 then
+		local meta = minetest.get_meta(pos)
+		meta:set_int("index", 1)
 		timer:start(timeout)
 	end
 end
