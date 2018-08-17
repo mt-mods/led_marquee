@@ -220,6 +220,7 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 			end
 		end
 	elseif msg and type(msg) == "number" then
+		meta:set_string("last_msg", tostring(msg))
 		led_marquee.display_msg(pos, channel, tostring(msg))
 	end
 end
