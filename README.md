@@ -40,13 +40,14 @@ This mod uses the full ISO-8859-1 character set (see https://en.wikipedia.org/wi
 If a string is prefixed with character code 255, it is treated as UTF-8 and passed through a simple translation function.  Only characters with codes greater than 159 are altered; normal ASCII text, color codes, control codes, and the above symbols are passed through unchanged.  Note that in this mode, a character code over 159 is treated as the first byte of a two-byte symbol.
 
 The panels also respond to these control messages:
-the keywords "off", "colon" and "period" translate to a blank space, ":", and ".", respectively (they're leftover from the nixie tubes fork, but might be useful anyway)
 
-* "del" is mapped to character #127, a square with an X in it.
-* "allon" is mapped to character #144, the full/all-on block graphic.
-* "cursor" or character code 31 will display a short, thick, flashing line at the bottom of the panel.
-* "off_multi" turns all panels in a lineup or wall off - essentially a "clear screen" command.
-* "allon_multi" turns on all LEDs of all panels in a lineup/wall (by filling them with char #144).
+* "off_multi" or "clear" turns all panels in a lineup or wall off - essentially a "clear screen" command.
+* "allon_multi" turns on all LEDs of all panels in a lineup/wall (by filling them with char #144, i.e. the reverse of "clear").
+* "start_scroll" starts the last-displayed message scrolling to the left, automatically moving, and automatically re-starting.  The scroll action will spread across and down a multi-line wall (just set a new, different channel on the first row you want to exclude).
+* "stop_scroll" actually does nothing, since all printable messages automatically stop the timer, but it's a human-readable way to indicate it.
+* "scroll_speed" followed by a decimal number (in the string, not a byte value) sets the time between scroll steps.  Minimum 0.5s, maximum 5s.
+
+If you need vertical scrolling, you will have to handle that yourself (since the size of a screen/wall is not hard-coded).
 
 A byte value of 0 to 27 in a string will change colors (i.e. string.char(0 to 27) ).
 
@@ -69,3 +70,5 @@ You can use "get" and "getstr" to read the one character from the connected pane
 All panels emit a small amount of light when displaying something.
 
 The panels only mount on a wall.
+
+The "master"/connected panel stores the last-displayed message and some other details in its metadata, so you may occasionally need to dig and re-place the panel if things go wonky (this won't happen during normal use, but it may happen if you're making lots of changes to the panels' layout, channel names, etc)
