@@ -62,7 +62,6 @@ led_marquee.set_timer = function(pos, timeout)
 	timer:stop()
 	if timeout > 0 then
 		local meta = minetest.get_meta(pos)
-		meta:set_int("index", 1)
 		timer:start(timeout)
 	end
 end
@@ -73,10 +72,11 @@ led_marquee.scroll_text = function(pos, elapsed)
 	local msg = meta:get_string("last_msg")
 	local channel = meta:get_string("channel")
 	if not index or index < 1 or index > string.len(msg) then index = 1 end
+	if string.byte(string.sub(msg,1,1)) < 32 then index = index + 1 end
+	index = index + 1
+	meta:set_int("index", index)
 	msg = string.sub(msg, index)
 	led_marquee.display_msg(pos, channel, msg.."  ")
-	if string.byte(string.sub(msg,1,1)) < 32 then index = index + 1 end
-	meta:set_int("index", index + 1)
 	if not elapsed or elapsed < 0.5 then return false end
 	return true
 end
@@ -214,7 +214,6 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 				meta:set_string("last_msg", msg)
 				led_marquee.display_msg(pos, channel, msg)
 				meta:set_int("index", 1)
-
 			end
 		else
 			local asc = string.byte(msg)
