@@ -189,7 +189,7 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 				minetest.swap_node(pos, { name = "led_marquee:char_144", param2 = fdir + (last_color*8)})
 			elseif msg == "cursor" then
 				minetest.swap_node(pos, { name = "led_marquee:char_31", param2 = fdir + (last_color*8)})
-			elseif msg == "off_multi" then
+			elseif msg == "off_multi" or msg == "clear" then
 				msg = string.rep(" ", 1024)
 				meta:set_string("last_msg", msg)
 				led_marquee.display_msg(pos, channel, msg)
