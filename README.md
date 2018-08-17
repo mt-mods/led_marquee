@@ -51,6 +51,7 @@ The panels also respond to these control messages:
 * "scroll_step" will immediately advance the last-displayed message by one character.  Omit the above automatic scrolling keywords, and use ONLY this keyword instead if you want to let your LuaController control the scrolling speed.
 * "get" will read the one character (as a numerical character value) currently displayed by the master panel (by reading its node name)
 * "getstr" will read the last-stored message for the entire lineup/wall (from the master panel's meta), respectively.  Note that even if the message has been or is being scrolled, you'll get the original stored message.
+* "getindex" will read the scroll index position in that message
 
 If you need vertical scrolling, you will have to handle that yourself (since the size of a screen/wall is not hard-coded).
 
