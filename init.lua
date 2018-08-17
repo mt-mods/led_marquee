@@ -216,8 +216,8 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 				meta:set_int("last_color", asc)
 			elseif msg == "get" then -- get value as ASCII numerical value
 				digiline:receptor_send(pos, digiline.rules.default, channel, tonumber(string.match(minetest.get_node(pos).name,"led_marquee:char_(.+)"))) -- wonderfully horrible string manipulaiton
-			elseif msg == "getstr" then -- get actual char
-				digiline:receptor_send(pos, digiline.rules.default, channel, string.char(tonumber(string.match(minetest.get_node(pos).name,"led_marquee:char_(.+)"))))
+			elseif msg == "getstr" then -- get the last stored message
+				digiline:receptor_send(pos, digiline.rules.default, channel, meta:get_string("last_msg"))
 			end
 		end
 	elseif msg and type(msg) == "number" then
