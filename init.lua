@@ -1,6 +1,8 @@
 -- simple LED marquee mod
 -- by Vanessa Dannenberg
 
+led_marquee = {}
+
 local S
 if minetest.get_modpath("intllib") then
 	S = intllib.make_gettext_pair()
@@ -53,6 +55,31 @@ local make_iso = function(s)
 	return s2
 end
 
+-- scrolling
+
+led_marquee.set_timer = function(pos, timeout)
+	local timer = minetest.get_node_timer(pos)
+	local meta = minetest.get_meta(pos)
+	meta:set_int("index", 1)
+	timer:stop()
+	if timeout > 0 then
+		timer:start(timeout)
+	end
+end
+
+led_marquee.scroll_text = function(pos, elapsed)
+	local meta = minetest.get_meta(pos)
+	local index = meta:get_int("index")
+	local msg = meta:get_string("last_msg")
+	local channel = meta:get_string("channel")
+	if not index or index < 1 or index > string.len(msg) then index = 1 end
+	msg = string.sub(msg, index)
+	led_marquee.display_msg(pos, channel, msg.."  ")
+	if string.byte(string.sub(msg,1,1)) < 32 then index = index + 1 end
+	meta:set_int("index", index + 1)
+	return true
+end
+
 -- the nodes:
 
 local fdir_to_right = {
@@ -71,14 +98,14 @@ local cbox = {
 	wall_side = { -8/16, -8/16, -8/16, -7/16, 8/16, 8/16 }
 }
 
-local display_string = function(pos, channel, string)
-	string = string.sub(string, 1, 1024)
-	if string == "off_multi" then
-		string = string.rep(" ", 1024)
-	elseif string == "allon_multi" then
-		string = string.rep(string.char(144), 1024)
-	elseif string.sub(string,1,1) == string.char(255) then -- treat it as incoming UTF-8
-		string = make_iso(string.sub(string, 2, 1024))
+led_marquee.display_msg = function(pos, channel, msg)
+	msg = string.sub(msg, 1, 1024)
+	if msg == "off_multi" then
+		msg = string.rep(" ", 1024)
+	elseif msg == "allon_multi" then
+		msg = string.rep(string.char(144), 1024)
+	elseif string.sub(msg,1,1) == string.char(255) then -- treat it as incoming UTF-8
+		msg = make_iso(string.sub(msg, 2, 1024))
 	end
 
 	local master_fdir = minetest.get_node(pos).param2 % 8
@@ -90,7 +117,7 @@ local display_string = function(pos, channel, string)
 		master_meta:set_int("last_color", 0)
 	end
 	local i = 1
-	local len = string.len(string)
+	local len = string.len(msg)
 	local wrapped = nil
 	while i <= len do
 		local node = minetest.get_node(pos2)
@@ -98,7 +125,7 @@ local display_string = function(pos, channel, string)
 		local meta = minetest.get_meta(pos2)
 		local setchan = nil
 		if meta then setchan = meta:get_string("channel") end
-		local asc = string.byte(string, i, i)
+		local asc = string.byte(msg, i, i)
 		if not string.match(node.name, "led_marquee:char_") then
 			if not wrapped then
 				pos2.x = pos.x
@@ -118,8 +145,8 @@ local display_string = function(pos, channel, string)
 			i = i + 1
 			wrapped = nil
 		elseif asc == 29 then
-			local c = string.byte(string, i+1, i+1) or 0
-			local r = string.byte(string, i+2, i+2) or 0
+			local c = string.byte(msg, i+1, i+1) or 0
+			local r = string.byte(msg, i+2, i+2) or 0
 			pos2.x = pos.x + (fdir_to_right[fdir+1][1])*c
 			pos2.y = pos.y - r
 			pos2.z = pos.z + (fdir_to_right[fdir+1][2])*c
@@ -152,6 +179,7 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 
 	if setchan ~= channel then return end
 	if msg and msg ~= "" and type(msg) == "string" then
+		led_marquee.set_timer(pos, 0)
 		if string.len(msg) > 1 then
 			if msg == "off" then
 				minetest.swap_node(pos, { name = "led_marquee:char_32", param2 = fdir + (last_color*8)})
@@ -165,8 +193,20 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 				minetest.swap_node(pos, { name = "led_marquee:char_144", param2 = fdir + (last_color*8)})
 			elseif msg == "cursor" then
 				minetest.swap_node(pos, { name = "led_marquee:char_31", param2 = fdir + (last_color*8)})
+			elseif msg == "start_scroll" then
+				local timeout = meta:get_int("timeout")
+				if not timeout or timeout < 0.5 or timeout > 5 then timeout = 0 end
+				led_marquee.set_timer(pos, timeout)
+			elseif msg == "stop_scroll" then
+				return -- (the timer is already stopped by receipt of a message)
+			elseif string.sub(msg, 1, 12) == "scroll_speed" then
+				local timeout = tonumber(string.sub(msg, 13))
+				if not timeout or timeout < 0.5 or timeout > 5 then timeout = 0 end
+				meta:set_int("timeout", timeout)
+				led_marquee.set_timer(pos, timeout)
 			else
-				display_string(pos, channel, msg)
+				meta:set_string("last_msg", msg)
+				led_marquee.display_msg(pos, channel, msg)
 			end
 		else
 			local asc = string.byte(msg)
@@ -189,6 +229,8 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 		end
 	end
 end
+
+-- the nodes!
 
 for i = 31, 255 do
 	local groups = { cracky = 2, not_in_creative_inventory = 1}
@@ -244,12 +286,12 @@ for i = 31, 255 do
 				action = on_digiline_receive_string,
 			},
 		},
-		drop = "led_marquee:char_32"
+		drop = "led_marquee:char_32",
+		on_timer = led_marquee.scroll_text
 	})
 end
 
 -- crafts
-
 
 minetest.register_craft({
 	output = "led_marquee:char_32 6",
