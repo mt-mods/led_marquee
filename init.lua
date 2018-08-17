@@ -66,15 +66,16 @@ led_marquee.set_timer = function(pos, timeout)
 	end
 end
 
-led_marquee.scroll_text = function(pos, elapsed)
-
+led_marquee.scroll_text = function(pos, elapsed, skip)
 	local meta = minetest.get_meta(pos)
 	local msg = meta:get_string("last_msg")
 	local channel = meta:get_string("channel")
 	local index = meta:get_int("index")
 	if not index or index < 1 or not string.byte(msg, index) then index = 1 end
 	local len = string.len(msg)
-	index = index + 1
+	skip = skip or 1
+
+	index = index + skip
 
 	while index < len and string.byte(msg, index) < 28 do
 		index = index + 1
@@ -82,7 +83,7 @@ led_marquee.scroll_text = function(pos, elapsed)
 	end
 
 	if string.byte(msg, index - 1) < 28 then
-		led_marquee.display_msg(pos, channel, string.sub(msg, index - 1).."  ")
+		led_marquee.display_msg(pos, channel, string.sub(msg, index - 1)..string.rep(" ", skip + 1))
 	else
 		local i = index - 1
 		local color = ""
@@ -91,7 +92,7 @@ led_marquee.scroll_text = function(pos, elapsed)
 			if i == 0 then break end
 		end
 		if i > 0 then color = string.sub(msg, i, i) end
-		led_marquee.display_msg(pos, channel, color..string.sub(msg, index).."  ")
+		led_marquee.display_msg(pos, channel, color..string.sub(msg, index)..string.rep(" ", skip + 1))
 	end
 
 	meta:set_int("index", index)
@@ -219,8 +220,9 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 				if not timeout or timeout < 0.5 or timeout > 5 then timeout = 0 end
 				meta:set_int("timeout", timeout)
 				led_marquee.set_timer(pos, timeout)
-			elseif msg == "scroll_step" then
-				led_marquee.scroll_text(pos)
+			elseif string.sub(msg, 1, 11) == "scroll_step" then
+				local skip = tonumber(string.sub(msg, 12))
+				led_marquee.scroll_text(pos, nil, skip)
 			elseif msg == "get" then -- get the master panel's displayed char as ASCII numerical value
 				digilines.receptor_send(pos, digiline.rules.default, channel, tonumber(string.match(minetest.get_node(pos).name,"led_marquee:char_(.+)"))) -- wonderfully horrible string manipulaiton
 			elseif msg == "getstr" then -- get the last stored message
