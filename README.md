@@ -49,6 +49,7 @@ The panels also respond to these control messages:
 * "stop_scroll" does just what it says - it stops the auto-scroll timer.
 * "scroll_speed" followed by a decimal number (in the string, not a byte value) sets the time between scroll steps.  Minimum 0.5s, maximum 5s.
 * "scroll_step" will immediately advance the last-displayed message by one character.  Omit the above automatic scrolling keywords, and use ONLY this keyword instead if you want to let your LuaController control the scrolling speed.
+* "get" and "getstr" to read the one character (as a numerical character value) displayed by the master panel, or the last-stored message for the entire lineup/wall (from the master panel's meta), respectively.
 
 If you need vertical scrolling, you will have to handle that yourself (since the size of a screen/wall is not hard-coded).
 
@@ -69,8 +70,6 @@ A byte value of 28 in a string will act as a line feed (I would have used 10, bu
 A byte value of 29 in a string signals a cursor position command. The next two byte values select a column and row, respectively. The next character after the row byte will be printed there, and the rest of the string then continues printing from that spot onward with normal line wrapping, colors and so forth. Note that any string that does NOT contain cursor positioning commands will automatically start printing at the upper-left.
 
 Any number of color, line feed, and cursor position commands may be present in a string, making it possible to "frame-buffer" a screen full of text into a string before printing it.
-
-You can use "get" and "getstr" to read the one character from the connected panel. These messages will not read the other panels in the lineup/wall.
 
 All panels emit a small amount of light when displaying something.
 
