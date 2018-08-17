@@ -65,7 +65,9 @@ A byte value of 28 in a string will act as a line feed (I would have used 10, bu
 
 A byte value of 29 in a string signals a cursor position command. The next two byte values select a column and row, respectively. The next character after the row byte will be printed there, and the rest of the string then continues printing from that spot onward with normal line wrapping, colors and so forth. Note that any string that does NOT contain cursor positioning commands will automatically start printing at the upper-left.
 
-You can use "get" and "getstr" to read the one character from the connected panel. These messages will not read the other panels in the lineup.
+Any number of color, line feed, and cursor position commands may be present in a string, making it possible to "frame-buffer" a screen full of text into a string before printing it.
+
+You can use "get" and "getstr" to read the one character from the connected panel. These messages will not read the other panels in the lineup/wall.
 
 All panels emit a small amount of light when displaying something.
 
