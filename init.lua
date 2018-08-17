@@ -100,11 +100,7 @@ local cbox = {
 
 led_marquee.display_msg = function(pos, channel, msg)
 	msg = string.sub(msg, 1, 1024)
-	if msg == "off_multi" then
-		msg = string.rep(" ", 1024)
-	elseif msg == "allon_multi" then
-		msg = string.rep(string.char(144), 1024)
-	elseif string.sub(msg,1,1) == string.char(255) then -- treat it as incoming UTF-8
+	if string.sub(msg,1,1) == string.char(255) then -- treat it as incoming UTF-8
 		msg = make_iso(string.sub(msg, 2, 1024))
 	end
 
@@ -193,6 +189,14 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 				minetest.swap_node(pos, { name = "led_marquee:char_144", param2 = fdir + (last_color*8)})
 			elseif msg == "cursor" then
 				minetest.swap_node(pos, { name = "led_marquee:char_31", param2 = fdir + (last_color*8)})
+			elseif msg == "off_multi" then
+				msg = string.rep(" ", 1024)
+				meta:set_string("last_msg", msg)
+				led_marquee.display_msg(pos, channel, msg)
+			elseif msg == "allon_multi" then
+				msg = string.rep(string.char(144), 1024)
+				meta:set_string("last_msg", msg)
+				led_marquee.display_msg(pos, channel, msg)
 			elseif msg == "start_scroll" then
 				local timeout = meta:get_int("timeout")
 				if not timeout or timeout < 0.5 or timeout > 5 then timeout = 0 end
