@@ -67,16 +67,32 @@ led_marquee.set_timer = function(pos, timeout)
 end
 
 led_marquee.scroll_text = function(pos, elapsed)
+
 	local meta = minetest.get_meta(pos)
-	local index = meta:get_int("index")
 	local msg = meta:get_string("last_msg")
 	local channel = meta:get_string("channel")
-	if not index or index < 1 or index > string.len(msg) then index = 1 end
-	if string.byte(string.sub(msg,1,1)) < 32 then index = index + 1 end
-	index = index + 1
+	local index = meta:get_int("index") + 1
+	if not index or index < 1 or not string.byte(msg, index) then index = 1 end
+	local len = string.len(msg)
+
+	while string.byte(msg, index) < 28 and index < len do
+		index = index + 1
+		if index > len then index = 1 break end
+	end
+	if string.byte(msg, index - 1) < 28 then
+		led_marquee.display_msg(pos, channel, string.sub(msg, index - 1).."  ")
+	else
+		local i = index - 1
+		local color = ""
+		while string.byte(msg, i) > 27 and i > 0 do
+			i = i - 1
+			if i == 0 then break end
+		end
+		if i > 0 then color = string.sub(msg, i, i) end
+		led_marquee.display_msg(pos, channel, color..string.sub(msg, index).."  ")
+	end
+
 	meta:set_int("index", index)
-	msg = string.sub(msg, index)
-	led_marquee.display_msg(pos, channel, msg.."  ")
 	if not elapsed or elapsed < 0.5 then return false end
 	return true
 end
