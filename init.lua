@@ -205,8 +205,8 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 				digiline:receptor_send(pos, digiline.rules.default, channel, tonumber(string.match(minetest.get_node(pos).name,"led_marquee:char_(.+)"))) -- wonderfully horrible string manipulaiton
 			elseif msg == "getstr" then -- get the last stored message
 				digiline:receptor_send(pos, digiline.rules.default, channel, meta:get_string("last_msg"))
-			elseif msg == "getindex" then -- get the last stored message
-				digiline:receptor_send(pos, digiline.rules.default, channel, meta:get_string("index"))
+			elseif msg == "getindex" then -- get the scroll index
+				digiline:receptor_send(pos, digiline.rules.default, channel, meta:get_int("index"))
 			else
 				led_marquee.set_timer(pos, 0)
 				meta:set_string("last_msg", msg)
