@@ -177,18 +177,6 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 	if msg and msg ~= "" and type(msg) == "string" then
 		led_marquee.set_timer(pos, 0)
 		if string.len(msg) > 1 then
-			if msg == "off" then
-				minetest.swap_node(pos, { name = "led_marquee:char_32", param2 = fdir + (last_color*8)})
-			elseif msg == "colon" then
-				minetest.swap_node(pos, { name = "led_marquee:char_58", param2 = fdir + (last_color*8)})
-			elseif msg == "period" then
-				minetest.swap_node(pos, { name = "led_marquee:char_46", param2 = fdir + (last_color*8)})
-			elseif msg == "del" then
-				minetest.swap_node(pos, { name = "led_marquee:char_127", param2 = fdir + (last_color*8)})
-			elseif msg == "allon" then
-				minetest.swap_node(pos, { name = "led_marquee:char_144", param2 = fdir + (last_color*8)})
-			elseif msg == "cursor" then
-				minetest.swap_node(pos, { name = "led_marquee:char_31", param2 = fdir + (last_color*8)})
 			elseif msg == "off_multi" or msg == "clear" then
 				msg = string.rep(" ", 1024)
 				meta:set_string("last_msg", msg)
