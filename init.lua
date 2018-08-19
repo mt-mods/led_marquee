@@ -119,9 +119,9 @@ local cbox = {
 }
 
 led_marquee.display_msg = function(pos, channel, msg)
-	msg = string.sub(msg, 1, 1024)
+	msg = string.sub(msg, 1, 4096)
 	if string.sub(msg,1,1) == string.char(255) then -- treat it as incoming UTF-8
-		msg = make_iso(string.sub(msg, 2, 1024))
+		msg = make_iso(string.sub(msg, 2, 4096))
 	end
 
 	local master_fdir = minetest.get_node(pos).param2 % 8
@@ -198,13 +198,13 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 		if string.len(msg) > 1 then
 			if msg == "clear" then
 				led_marquee.set_timer(pos, 0)
-				msg = string.rep(" ", 1024)
+				msg = string.rep(" ", 2048)
 				meta:set_string("last_msg", msg)
 				led_marquee.display_msg(pos, channel, msg)
 				meta:set_int("index", 1)
 			elseif msg == "allon" then
 				led_marquee.set_timer(pos, 0)
-				msg = string.rep(string.char(144), 1024)
+				msg = string.rep(string.char(144), 2048)
 				meta:set_string("last_msg", msg)
 				led_marquee.display_msg(pos, channel, msg)
 				meta:set_int("index", 1)
