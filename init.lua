@@ -224,7 +224,7 @@ led_marquee.display_msg = function(pos, channel, msg)
 		elseif string.match(node.name, "led_marquee:char_")
 			and fdir ~= master_fdir or (setchan ~= nil and setchan ~= "" and setchan ~= channel) then
 			break
-		elseif asc == 28 then
+		elseif asc == 10 then
 			pos2.x = pos.x
 			pos2.y = pos2.y-1
 			pos2.z = pos.z
