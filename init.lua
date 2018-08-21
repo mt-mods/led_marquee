@@ -160,7 +160,7 @@ led_marquee.scroll_text = function(pos, elapsed, skip)
 	local index = meta:get_int("index")
 	local color = meta:get_int("last_color")
 	local colorchar = color_to_char[color+1]
-	if not index or index < 1 or not string.byte(msg, index) then index = 1 end
+	if not index or index < 1 then index = 1 end
 	local len = string.len(msg)
 	index = index + skip
 	if index > len then index = 1 end
@@ -185,7 +185,14 @@ led_marquee.scroll_text = function(pos, elapsed, skip)
 		end
 	end
 
+	print("[LED] msg = "..msg)
+	print("[LED] msg len = "..len)
+	print("[LED] index = "..index)
+	print("[LED] r = "..index)
+	print("[LED] f = "..index)
+
 	led_marquee.display_msg(pos, channel, "/"..colorchar..string.sub(msg, f)..string.rep(" ", skip + 1))
+
 	meta:set_int("index", f)
 	if not elapsed or elapsed < 0.2 then return false end
 	return true
