@@ -143,8 +143,11 @@ end
 led_marquee.set_timer = function(pos, timeout)
 	local timer = minetest.get_node_timer(pos)
 	timer:stop()
+	if not timeout or timeout < 0.2 or timeout > 5 then return false end
+
 	if timeout > 0 then
 		local meta = minetest.get_meta(pos)
+		meta:set_int("timeout", timeout)
 		timer:start(timeout)
 	end
 end
@@ -318,15 +321,12 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 				meta:set_int("index", 1)
 			elseif msg == "start_scroll" then
 				local timeout = meta:get_int("timeout")
-				if not timeout or timeout < 0.2 or timeout > 5 then timeout = 0 end
 				led_marquee.set_timer(pos, timeout)
 			elseif msg == "stop_scroll" then
 				led_marquee.set_timer(pos, 0)
 				return
 			elseif string.sub(msg, 1, 12) == "scroll_speed" then
 				local timeout = tonumber(string.sub(msg, 13))
-				if not timeout or timeout < 0.2 or timeout > 5 then timeout = 0 end
-				meta:set_int("timeout", timeout)
 				led_marquee.set_timer(pos, timeout)
 			elseif string.sub(msg, 1, 11) == "scroll_step" then
 				local skip = tonumber(string.sub(msg, 12))
