@@ -153,6 +153,7 @@ led_marquee.set_timer = function(pos, timeout)
 end
 
 led_marquee.scroll_text = function(pos, elapsed, skip)
+	skip = skip or 1
 	local meta = minetest.get_meta(pos)
 	local msg = meta:get_string("last_msg")
 	local channel = meta:get_string("channel")
@@ -161,8 +162,8 @@ led_marquee.scroll_text = function(pos, elapsed, skip)
 	local colorchar = color_to_char[color+1]
 	if not index or index < 1 or not string.byte(msg, index) then index = 1 end
 	local len = string.len(msg)
-	skip = skip or 1
 	index = index + skip
+	if index > len then index = 1 end
 
 	-- search backward to find the most recent color code in the string
 	local r = index
@@ -177,7 +178,7 @@ led_marquee.scroll_text = function(pos, elapsed, skip)
 	-- search forward to find the next printable symbol after the current index
 	local f = index
 	while f < len do
-		if string.match(string.sub(msg, f, f+1), "/[0-9A-Ra-r]") then
+		if string.match(string.sub(msg, f-1, f), "/[0-9A-Ra-r]") then
 			f = f + 2
 		else
 			break
