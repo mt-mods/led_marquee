@@ -183,7 +183,7 @@ led_marquee.scroll_text = function(pos, elapsed, skip)
 
 	led_marquee.display_msg(pos, channel, "/"..colorchar..string.sub(msg, f)..string.rep(" ", skip + 1))
 	meta:set_int("index", f)
-	if not elapsed or elapsed < 0.5 then return false end
+	if not elapsed or elapsed < 0.2 then return false end
 	return true
 end
 
@@ -318,14 +318,14 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 				meta:set_int("index", 1)
 			elseif msg == "start_scroll" then
 				local timeout = meta:get_int("timeout")
-				if not timeout or timeout < 0.5 or timeout > 5 then timeout = 0 end
+				if not timeout or timeout < 0.2 or timeout > 5 then timeout = 0 end
 				led_marquee.set_timer(pos, timeout)
 			elseif msg == "stop_scroll" then
 				led_marquee.set_timer(pos, 0)
 				return
 			elseif string.sub(msg, 1, 12) == "scroll_speed" then
 				local timeout = tonumber(string.sub(msg, 13))
-				if not timeout or timeout < 0.5 or timeout > 5 then timeout = 0 end
+				if not timeout or timeout < 0.2 or timeout > 5 then timeout = 0 end
 				meta:set_int("timeout", timeout)
 				led_marquee.set_timer(pos, timeout)
 			elseif string.sub(msg, 1, 11) == "scroll_step" then

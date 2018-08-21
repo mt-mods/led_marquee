@@ -49,7 +49,7 @@ The panels also respond to these control messages:
 
 	As it advances through the message, the scroll code will search through the message for a printable character, on each scroll step, basically stripping-out color code, and using just the last one before the new start position.  This is done in order to keep a constant visible speed (the text will still be colored properly though).
 * "stop_scroll" does just what it says - it stops the auto-scroll timer.  
-* "scroll_speed" followed by a decimal number (in the string, not a byte value) sets the time between scroll steps.  Minimum 0.5s, maximum 5s.
+* "scroll_speed" followed by a decimal number (in the string, not a byte value) sets the time between scroll steps.  Minimum 0.2s, maximum 5s.
 * "scroll_step" will immediately advance the last-displayed message by one character.  Omit the above automatic scrolling keywords, and use ONLY this keyword instead if you want to let your LuaController control the scrolling speed.  Optionally, you can follow this with a number and the scroll code will skip forward that many bytes into the message, starting from the current position, before starting the above-mentioned color-vs-character search.  Essentially, this value will roughly translate to the number of printable characters to skip.
 * "get" will read the one character (as a numerical character value) currently displayed by the master panel (by reading its node name)
 * "getstr" will read the last-stored message for the entire lineup/wall (from the master panel's meta).  Note that even if the message has been or is being scrolled, you'll get the original stored message.
