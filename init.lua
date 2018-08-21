@@ -285,6 +285,8 @@ led_marquee.display_msg = function(pos, channel, msg)
 			pos2.z = pos2.z + fdir_to_right[fdir+1][2]
 			i = i + 1
 			wrapped = nil
+		else
+			i = i + 1
 		end
 	end
 end
