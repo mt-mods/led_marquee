@@ -24,7 +24,7 @@ If the program finds something other than a panel, it wraps to the next line. If
 
 Lines of panels don't need to be all the same length, the program will wrap as needed, with the left margin always being aligned with the panel the LuaController is connected to.
 
-Strings are trimmed to 1 kB.
+Strings are trimmed to 6 kB.
 
 Panels are not erased between prints.
 
@@ -43,8 +43,8 @@ If a string is prefixed with character code 255, it is treated as UTF-8 and pass
 
 The panels also respond to these control messages:
 
-* "clear" turns all panels in a lineup or wall off - essentially a "clear screen" command.
-* "allon" fills all panels in a lineup/wall with char(144), i.e. the reverse of "clear".
+* "clear" turns all panels in a lineup or wall off, or up to 2048 of them, anyway - essentially a "clear screen" command.
+* "allon" fills all panels in a lineup/wall, up to a max of 2048 of them, with char(144), i.e. the reverse of "clear".
 * "start_scroll" starts the automatic scrolling function, repeatedly moving the last displayed message to the left one character space each time the scroll timer runs out (and automatically restarting it, natch).  The scroll action will spread across the line, and down a multi-line wall (just set a new, different channel on the first row you want to exclude), and will continue until "stop_scroll" or any displayable message is received.
 
 	As it advances through the message, the scroll code will search through the message for a printable character, on each scroll step, basically stripping-out color code, and using just the last one before the new start position.  This is done in order to keep a constant visible speed (the text will still be colored properly though).
