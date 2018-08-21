@@ -184,13 +184,6 @@ led_marquee.scroll_text = function(pos, elapsed, skip)
 			break
 		end
 	end
-
-	print("[LED] msg = "..msg)
-	print("[LED] msg len = "..len)
-	print("[LED] index = "..index)
-	print("[LED] r = "..index)
-	print("[LED] f = "..index)
-
 	led_marquee.display_msg(pos, channel, "/"..colorchar..string.sub(msg, f)..string.rep(" ", skip + 1))
 
 	meta:set_int("index", f)
