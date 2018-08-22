@@ -341,9 +341,12 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 			else
 				msg = string.gsub(msg, "//", string.char(30))
 				led_marquee.set_timer(pos, 0)
+				local last_msg = meta:get_string("last_msg")
 				meta:set_string("last_msg", msg)
 				led_marquee.display_msg(pos, channel, msg)
-				meta:set_int("index", 1)
+				if last_msg ~= msg then
+					meta:set_int("index", 1)
+				end
 			end
 		else
 			local asc = string.byte(msg)
