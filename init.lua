@@ -369,11 +369,11 @@ for i = 31, 255 do
 	local groups = { cracky = 2, not_in_creative_inventory = 1}
 	local light = LIGHT_MAX-2
 	local description = S("LED marquee panel ("..i..")")
-	local leds = "led_marquee_char_"..i..".png"
+	local leds = "led_marquee_char_"..i..".png^[mask:led_marquee_leds_on.png"
 
 	if i == 31 then
 		leds ={
-			name = "led_marquee_char_31.png",
+			name = "led_marquee_char_31.png^[mask:led_marquee_leds_on_cursor.png",
 			animation = {type = "vertical_frames", aspect_w = 32, aspect_h = 32, length = 0.75}
 		}
 	end
