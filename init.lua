@@ -128,7 +128,12 @@ local make_iso = function(s)
 	local s2 = ""
 	while i <= string.len(s) do
 		if string.byte(s,i) > 159 then
-			s2 = s2..string.char(get_iso(string.sub(s, i, i+1)))
+			local ciso = get_iso(string.sub(s, i, i+1))
+			if ciso >= 0 and ciso < 256 then
+				s2 = s2..string.char(ciso)
+			else
+				s2 = s2..string.char(127)
+			end
 			i = i + 2
 		else
 			s2 = s2..string.sub(s, i, i)
