@@ -10,12 +10,7 @@ led_marquee.message_schedule_dtime = tonumber(minetest.settings:get("led_marquee
 led_marquee.message_schedule_size  = tonumber(minetest.settings:get("led_marquee_message_schedule_size"))  or 10
 led_marquee.relay_timer = 0
 
-local S
-if minetest.get_modpath("intllib") then
-	S = intllib.make_gettext_pair()
-else
-	S = function(s) return s end
-end
+local S = minetest.get_translator(minetest.get_current_modname())
 
 local color_to_char = {
 	"0",
