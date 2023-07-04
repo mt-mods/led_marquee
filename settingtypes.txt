@@ -1,0 +1,8 @@
+# Minimal marquee interval
+led_marquee_message_minimum_time float 0.5
+
+# Marquee globalstep update interval
+led_marquee_message_schedule_dtime float 0.2
+
+# Global message queue size
+led_marquee_message_schedule_size int 10
