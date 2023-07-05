@@ -4,13 +4,15 @@
 led_marquee = {}
 led_marquee.scheduled_messages = {}
 
-led_marquee.message_minimum_time   = tonumber(minetest.settings:get("led_marquee_message_minimum_time"))   or 0.5
-
+-- settings
+led_marquee.message_minimum_time = tonumber(minetest.settings:get("led_marquee_message_minimum_time")) or 0.5
 led_marquee.message_schedule_dtime = tonumber(minetest.settings:get("led_marquee_message_schedule_dtime")) or 0.2
-led_marquee.message_schedule_size  = tonumber(minetest.settings:get("led_marquee_message_schedule_size"))  or 10
+led_marquee.message_schedule_size = tonumber(minetest.settings:get("led_marquee_message_schedule_size")) or 10
+
 led_marquee.relay_timer = 0
 
 local S = minetest.get_translator(minetest.get_current_modname())
+local FS = function(...) return minetest.formspec_escape(S(...)) end
 
 local color_to_char = {
 	"0",
@@ -101,26 +103,12 @@ local reset_meta = function(pos)
 	minetest.get_meta(pos):set_string("formspec",
 			"formspec_version[4]"..
 			"size[8,4]"..
-			"button_exit[3,2.5;2,0.5;proceed;Proceed]"..
-			"field[1.75,1.5;4.5,0.5;channel;Channel;${channel}]"
+			"button_exit[3,2.5;2,0.5;proceed;"..FS("Proceed").."]"..
+			"field[1.75,1.5;4.5,0.5;channel;"..FS("Channel")..";${channel}]"
 	)
 end
 
-local on_digiline_receive_std = function(pos, node, channel, msg)
-	local meta = minetest.get_meta(pos)
-	local setchan = meta:get_string("channel")
-	if setchan ~= channel then return end
-	local num = tonumber(msg)
-	if msg == "colon" or msg == "period" or msg == "off" or (num and (num >= 0 and num <= 9)) then
-			minetest.swap_node(pos, { name = "led_marquee:marquee_"..msg, param2 = node.param2})
-	end
-end
-
 -- convert Lua's idea of a UTF-8 char to ISO-8859-1
-
--- first char is non-break space, 0xA0
-local iso_chars=" ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ"
-
 local get_iso = function(c)
 	local hb = string.byte(c,1) or 0
 	local lb = string.byte(c,2) or 0
@@ -366,11 +354,12 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 				local skip = tonumber(string.sub(msg, 12))
 				led_marquee.scroll_text(pos, nil, skip)
 			elseif msg == "get" then -- get the master panel's displayed char as ASCII numerical value
-				digilines.receptor_send(pos, digiline.rules.default, channel, tonumber(string.match(minetest.get_node(pos).name,"led_marquee:char_(.+)"))) -- wonderfully horrible string manipulaiton
+				digilines.receptor_send(pos, digilines.rules.default, channel,
+					tonumber(string.match(minetest.get_node(pos).name,"led_marquee:char_(.+)")))
 			elseif msg == "getstr" then -- get the last stored message
-				digilines.receptor_send(pos, digiline.rules.default, channel, meta:get_string("last_msg"))
+				digilines.receptor_send(pos, digilines.rules.default, channel, meta:get_string("last_msg"))
 			elseif msg == "getindex" then -- get the scroll index
-				digilines.receptor_send(pos, digiline.rules.default, channel, meta:get_int("index"))
+				digilines.receptor_send(pos, digilines.rules.default, channel, meta:get_int("index"))
 			else
 				msg = string.gsub(msg, "//", string.char(30))
 				led_marquee.set_timer(pos, 0)
@@ -400,8 +389,8 @@ end
 
 for i = 31, 255 do
 	local groups = { cracky = 2, not_in_creative_inventory = 1}
-	local light = LIGHT_MAX-2
-	local description = S("LED marquee panel ("..i..")")
+	local light = minetest.LIGHT_MAX-2
+	local description = S("LED marquee panel (@1)", i)
 	local leds = "led_marquee_char_"..i..".png^[mask:led_marquee_leds_on.png"
 
 	if i == 31 then
