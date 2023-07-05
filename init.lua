@@ -354,12 +354,12 @@ local on_digiline_receive_string = function(pos, node, channel, msg)
 				local skip = tonumber(string.sub(msg, 12))
 				led_marquee.scroll_text(pos, nil, skip)
 			elseif msg == "get" then -- get the master panel's displayed char as ASCII numerical value
-				-- luacheck: ignore 631
-				digilines.receptor_send(pos, digiline.rules.default, channel, tonumber(string.match(minetest.get_node(pos).name,"led_marquee:char_(.+)"))) -- wonderfully horrible string manipulaiton
+				digilines.receptor_send(pos, digilines.rules.default, channel,
+					tonumber(string.match(minetest.get_node(pos).name,"led_marquee:char_(.+)")))
 			elseif msg == "getstr" then -- get the last stored message
-				digilines.receptor_send(pos, digiline.rules.default, channel, meta:get_string("last_msg"))
+				digilines.receptor_send(pos, digilines.rules.default, channel, meta:get_string("last_msg"))
 			elseif msg == "getindex" then -- get the scroll index
-				digilines.receptor_send(pos, digiline.rules.default, channel, meta:get_int("index"))
+				digilines.receptor_send(pos, digilines.rules.default, channel, meta:get_int("index"))
 			else
 				msg = string.gsub(msg, "//", string.char(30))
 				led_marquee.set_timer(pos, 0)

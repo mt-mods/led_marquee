@@ -1,9 +1,8 @@
 unused_args = false
 
 read_globals = {
-    "table",
+    table = {fields = {"copy"}},
     "minetest",
-    "digiline",
     "digilines"
 }
 
