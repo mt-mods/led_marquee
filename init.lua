@@ -422,7 +422,6 @@ for i = 31, 255 do
 		is_ground_content = false,
 		wield_image = wimage,
 		palette="led_marquee_palette.png",
-		use_texture_alpha = "blend",
 		groups = groups,
 		paramtype = "light",
 		paramtype2 = "colorwallmounted",
