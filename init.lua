@@ -153,7 +153,7 @@ led_marquee.set_timer = function(pos, timeout)
 end
 
 led_marquee.scroll_text = function(pos, elapsed, skip)
-	skip = skip or 1
+	if type(skip) ~= "number" then skip = 1 end
 	local meta = minetest.get_meta(pos)
 	local msg = meta:get_string("last_msg")
 	local channel = meta:get_string("channel")
